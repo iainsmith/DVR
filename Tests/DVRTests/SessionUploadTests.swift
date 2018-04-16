@@ -13,11 +13,12 @@ class SessionUploadTests: XCTestCase {
     }()
     let multipartBoundary = "---------------------------3klfenalksjflkjoi9auf89eshajsnl3kjnwal".utf8Data
     lazy var testFile: URL = {
-        return Bundle(for: type(of: self)).url(forResource: "testfile", withExtension: "txt")!
+        let path = fileLocation.path(forResource: "testfile", ofType: "txt")!
+        return URL(fileURLWithPath: path)
     }()
 
     func testUploadFile() {
-        let session = Session(cassetteName: "upload-file")
+        let session = makeTestSession(cassetteName: "upload-file")
         session.recordingEnabled = false
         let expectation = self.expectation(description: "Network")
 
@@ -42,7 +43,7 @@ class SessionUploadTests: XCTestCase {
     }
 
     func testUploadData() {
-        let session = Session(cassetteName: "upload-data")
+        let session = makeTestSession(cassetteName: "upload-data")
         session.recordingEnabled = false
         let expectation = self.expectation(description: "Network")
 

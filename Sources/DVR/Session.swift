@@ -9,7 +9,7 @@ open class Session: URLSession {
     open let backingSession: URLSession
     open var recordingEnabled = true
 
-    private let testBundle: Bundle
+    private let testBundle: FileLocation
 
     private var recording = false
     private var needsPersistence = false
@@ -23,7 +23,7 @@ open class Session: URLSession {
 
     // MARK: - Initializers
 
-    public init(outputDirectory: String = "~/Desktop/DVR/", cassetteName: String, testBundle: Bundle = Bundle.allBundles.filter() { $0.bundlePath.hasSuffix(".xctest") }.first!, backingSession: URLSession = URLSession.shared) {
+    public init(outputDirectory: String = "~/Desktop/DVR/", cassetteName: String, testBundle: FileLocation = defaultFileLocationForCurrentPlatform(), backingSession: URLSession = URLSession.shared) {
         self.outputDirectory = outputDirectory
         self.cassetteName = cassetteName
         self.testBundle = testBundle

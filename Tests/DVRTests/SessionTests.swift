@@ -6,7 +6,7 @@ class SessionTests: XCTestCase {
         let configuration = URLSessionConfiguration.default
         configuration.httpAdditionalHeaders = ["testSessionHeader": "testSessionHeaderValue"]
         let backingSession = URLSession(configuration: configuration)
-        return Session(cassetteName: "example", backingSession: backingSession)
+        return makeTestSession(cassetteName: "example", backingSession: backingSession)
     }()
 
     let request = URLRequest(url: URL(string: "http://example.com")!)
@@ -58,7 +58,7 @@ class SessionTests: XCTestCase {
     }
 
     func testTextPlayback() {
-        let session = Session(cassetteName: "text")
+        let session = makeTestSession(cassetteName: "text")
         session.recordingEnabled = false
 
         var request = URLRequest(url: URL(string: "http://example.com")!)
@@ -83,7 +83,7 @@ class SessionTests: XCTestCase {
     func testDownload() {
         let expectation = self.expectation(description: "Network")
 
-        let session = Session(cassetteName: "json-example")
+        let session = makeTestSession(cassetteName: "json-example")
         session.recordingEnabled = false
 
         let request = URLRequest(url: URL(string: "https://www.howsmyssl.com/a/check")!)
@@ -108,7 +108,7 @@ class SessionTests: XCTestCase {
 
     func testMultiple() {
         let expectation = self.expectation(description: "Network")
-        let session = Session(cassetteName: "multiple")
+        let session = makeTestSession(cassetteName: "multiple")
         session.beginRecording()
 
         let apple = self.expectation(description: "Apple")
@@ -153,7 +153,7 @@ class SessionTests: XCTestCase {
         let delegate = Delegate(expectation: expectation)
         let config = URLSessionConfiguration.default
         let backingSession = URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
-        let session = Session(cassetteName: "example", backingSession: backingSession)
+        let session = makeTestSession(cassetteName: "example", backingSession: backingSession)
         session.recordingEnabled = false
 
         let task = session.dataTask(with: request)
@@ -179,7 +179,7 @@ class SessionTests: XCTestCase {
         let delegate = Delegate(expectation: expectation)
         let config = URLSessionConfiguration.default
         let backingSession = URLSession(configuration: config, delegate: delegate, delegateQueue: nil)
-        let session = Session(cassetteName: "example", backingSession: backingSession)
+        let session = makeTestSession(cassetteName: "example", backingSession: backingSession)
         session.recordingEnabled = false
 
         let task = session.dataTask(with: request)
@@ -187,4 +187,14 @@ class SessionTests: XCTestCase {
 
         waitForExpectations(timeout: 1, handler: nil)
     }
+}
+
+extension SessionTests {
+    #if !os(macOS)
+    public func allTests() -> [XCTestCaseEntry] {
+    return [
+    testCase(TravisClientTests.allTests),
+    ]
+    }
+    #endif
 }
