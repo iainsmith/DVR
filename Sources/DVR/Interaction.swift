@@ -105,7 +105,7 @@ extension Interaction {
 
         let urlRequest = NSMutableURLRequest(dictionary: request)
         self.request = URLRequest(urlRequest)
-        self.response = HTTPURLResponse(dictionary: response)
+        self.response = HTTPURLResponse(dictionary: response).foundationResponse
         self.recordedAt = Date(timeIntervalSince1970: recordedAt)
         self.responseData = Interaction.dencodeBody(response["body"], headers: response["headers"] as? [String: String])
     }

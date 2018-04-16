@@ -18,7 +18,12 @@ open class Session: URLSession {
     private var completionBlock: (() -> Void)?
 
     override open var delegate: URLSessionDelegate? {
-        return backingSession.delegate
+        get {
+            return backingSession.delegate
+        }
+        set {
+            super.delegate = newValue
+        }
     }
 
     // MARK: - Initializers
@@ -33,6 +38,7 @@ open class Session: URLSession {
 
     // MARK: - URLSession
 
+    #if os(macOS)
     open override func dataTask(with request: URLRequest) -> URLSessionDataTask {
         return addDataTask(request)
     }
@@ -66,6 +72,8 @@ open class Session: URLSession {
         let data = try! Data(contentsOf: fileURL)
         return addUploadTask(request, fromData: data, completionHandler: completionHandler)
     }
+
+    #endif
 
     open override func invalidateAndCancel() {
         recording = false
@@ -118,6 +126,7 @@ open class Session: URLSession {
         return Cassette(dictionary: json)
     }
 
+
     func finishTask(_ task: URLSessionTask, interaction: Interaction, playback: Bool) {
         needsPersistence = needsPersistence || !playback
 
@@ -132,7 +141,7 @@ open class Session: URLSession {
         }
 
         if let delegate = delegate as? URLSessionDataDelegate, let task = task as? URLSessionDataTask, let data = interaction.responseData {
-            delegate.urlSession?(self, dataTask: task, didReceive: data as Data)
+            delegate.urlSession?(self, dataTask: task, didReceive: data)
         }
 
         if let delegate = delegate as? URLSessionTaskDelegate {
