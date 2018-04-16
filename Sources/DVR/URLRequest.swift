@@ -68,6 +68,16 @@ extension NSMutableURLRequest {
     }
 }
 
+extension URLRequest {
+    init(_ request: NSMutableURLRequest) {
+        self.init(url: request.url!)
+        self.httpMethod = request.httpMethod
+        self.allHTTPHeaderFields = request.allHTTPHeaderFields
+        self.httpMethod = request.httpMethod
+        self.httpBody = request.httpBody
+    }
+}
+
 
 extension NSMutableURLRequest {
     func appendHeaders(_ headers: [AnyHashable: Any]) {

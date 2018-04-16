@@ -22,7 +22,7 @@ struct Interaction {
 
     // MARK: - Encoding
 
-    static func encodeBody(_ body: Data, headers: [String: String]? = nil) -> AnyObject? {
+    static func encodeBody(_ body: Data, headers: [String: String]? = nil) -> AnyHashable? {
         if let contentType = headers?["Content-Type"] {
             // Text
             if contentType.hasPrefix("text/") {
@@ -33,7 +33,8 @@ struct Interaction {
             // JSON
             if contentType.hasPrefix("application/json") {
                 do {
-                    return try JSONSerialization.jsonObject(with: body, options: []) as AnyObject
+                    let hashable =  try JSONSerialization.jsonObject(with: body, options: []) as? AnyHashable
+                    return hashable
                 } catch {
                     return nil
                 }
@@ -41,7 +42,7 @@ struct Interaction {
         }
 
         // Base64
-        return body.base64EncodedString(options: []) as AnyObject?
+        return body.base64EncodedString(options: []) 
     }
 
     static func dencodeBody(_ body: Any?, headers: [String: String]? = nil) -> Data? {
@@ -102,7 +103,8 @@ extension Interaction {
             let response = dictionary["response"] as? [String: Any],
             let recordedAt = dictionary["recorded_at"] as? TimeInterval else { return nil }
 
-        self.request = NSMutableURLRequest(dictionary: request) as URLRequest
+        let urlRequest = NSMutableURLRequest(dictionary: request)
+        self.request = URLRequest(urlRequest)
         self.response = HTTPURLResponse(dictionary: response)
         self.recordedAt = Date(timeIntervalSince1970: recordedAt)
         self.responseData = Interaction.dencodeBody(response["body"], headers: response["headers"] as? [String: String])

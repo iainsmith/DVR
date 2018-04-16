@@ -63,6 +63,6 @@ private extension URLRequest {
             return self.httpBody == request.httpBody
         }
 
-        return encoded1.isEqual(encoded2)
+        return encoded1 == encoded2
     }
 }

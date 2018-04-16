@@ -28,7 +28,6 @@ open class Session: URLSession {
         self.cassetteName = cassetteName
         self.testBundle = testBundle
         self.backingSession = backingSession
-        super.init()
     }
 
 
@@ -185,7 +184,7 @@ open class Session: URLSession {
         }
 
         // Create directory
-        let outputDirectory = (self.outputDirectory as NSString).expandingTildeInPath
+        let outputDirectory = NSString(string: self.outputDirectory).expandingTildeInPath
         let fileManager = FileManager.default
         if !fileManager.fileExists(atPath: outputDirectory) {
             do {
@@ -201,7 +200,8 @@ open class Session: URLSession {
 
 
         do {
-            let outputPath = ((outputDirectory as NSString).appendingPathComponent(cassetteName) as NSString).appendingPathExtension("json")!
+            let directory = NSString(string: outputDirectory)
+            let outputPath = NSString(string: directory.appendingPathComponent(cassetteName)).appendingPathExtension("json")!
             let data = try JSONSerialization.data(withJSONObject: cassette.dictionary, options: [.prettyPrinted])
 
             // Add trailing new line
@@ -209,7 +209,8 @@ open class Session: URLSession {
                 print("[DVR] Failed to persist cassette.")
                 return
             }
-            string = string.appending("\n") as NSString
+
+            string = NSString(string: string.appending("\n"))
 
             if let data = string.data(using: String.Encoding.utf8.rawValue) {
                 try? data.write(to: URL(fileURLWithPath: outputPath), options: [.atomic])
